@@ -20,7 +20,7 @@ Organizations:
         # Name is the key by which this org will be referenced in channel
         # configuration transactions.
         # Name can include alphanumeric characters as well as dots and dashes.
-        Name: SampleOrg
+        Name: SampleOrg #조직이름
 
         # SkipAsForeign can be set to true for org definitions which are to be
         # inherited from the orderer system channel during channel creation.  This
@@ -32,43 +32,43 @@ Organizations:
 
         # ID is the key by which this org's MSP definition will be referenced.
         # ID can include alphanumeric characters as well as dots and dashes.
-        ID: SampleOrg
+        ID: SampleOrg #MSPID
 
         # MSPDir is the filesystem path which contains the MSP configuration.
-        MSPDir: msp
+        MSPDir: msp #조직의 MSP 경로
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
         #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-        Policies: &SampleOrgPolicies
-            Readers:
-                Type: Signature
+        Policies: &SampleOrgPolicies # 조직에 대한 정책
+            Readers:                 # 읽기 정책
+                Type: Signature      # 정책 타입 (Signature(서명)), ImplicitMeta
                 Rule: "OR('SampleOrg.member')"
                 # If your MSP is configured with the new NodeOUs, you might
                 # want to use a more specific rule like the following:
                 # Rule: "OR('SampleOrg.admin', 'SampleOrg.peer', 'SampleOrg.client')"
-            Writers:
+            Writers:                 # 쓰기 정책
                 Type: Signature
                 Rule: "OR('SampleOrg.member')"
                 # If your MSP is configured with the new NodeOUs, you might
                 # want to use a more specific rule like the following:
                 # Rule: "OR('SampleOrg.admin', 'SampleOrg.client')"
-            Admins:
+            Admins:                  # 어드민 정책
                 Type: Signature
                 Rule: "OR('SampleOrg.admin')"
-            Endorsement:
+            Endorsement:             # 보증 정책
                 Type: Signature
                 Rule: "OR('SampleOrg.member')"
 
         # OrdererEndpoints is a list of all orderers this org runs which clients
         # and peers may to connect to to push transactions and receive blocks respectively.
-        OrdererEndpoints:
+        OrdererEndpoints:            # 정의하는 조직이 오더러일 경우 오더라 주소
             - "127.0.0.1:7050"
 
         # AnchorPeers defines the location of peers which can be used for
         # cross-org gossip communication. Note, this value is only encoded in
         # the genesis block in the Application section context.
-        AnchorPeers:
+        AnchorPeers:                 # 정의하는 조직이 피어일 경우 앵커피어 주소
             - Host: 127.0.0.1
               Port: 7051
 
@@ -91,7 +91,7 @@ Organizations:
 #   then the v1.0.x peer will deliberately crash.
 #
 ################################################################################
-Capabilities:
+Capabilities:                   # 각각 사용하는 버전에 대한 정의, True
     # Channel capabilities apply to both the orderers and the peers and must be
     # supported by both.
     # Set the value of the capability to true to require it.
@@ -101,7 +101,7 @@ Capabilities:
         # level, but which would be incompatible with orderers and peers from
         # prior releases.
         # Prior to enabling V2.0 channel capabilities, ensure that all
-        # orderers and peers on a channel are at v2.0.0 or later.
+        # orderers and peers on a channel are at v2.0.0 or later. #최소 2.0이상의 버전이어야함
         V2_0: true
 
     # Orderer capabilities apply only to the orderers, and may be safely
@@ -220,10 +220,10 @@ Application: &ApplicationDefaults
     # Policies defines the set of policies at this level of the config tree
     # For Application policies, their canonical path is
     #   /Channel/Application/<PolicyName>
-    Policies: &ApplicationDefaultPolicies
-        LifecycleEndorsement:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Endorsement"
+    Policies: &ApplicationDefaultPolicies  #Application 정책에 관한 설정
+        LifecycleEndorsement:              # Chaincode Lifecycle 관련된 정책
+            Type: ImplicitMeta             # 정책타입 (Signature, ImplictMeta)
+            Rule: "MAJORITY Endorsement"   
         Endorsement:
             Type: ImplicitMeta
             Rule: "MAJORITY Endorsement"
@@ -255,7 +255,7 @@ Orderer: &OrdererDefaults
 
     # Orderer Type: The orderer implementation to start.
     # Available types are "solo" and "kafka".
-    OrdererType: solo
+    OrdererType: solo           #오더링 방식(etcdraf, solo, kafka)
 
     # Addresses used to be the list of orderer addresses that clients and peers
     # could connect to.  However, this does not allow clients to associate orderer
@@ -266,7 +266,7 @@ Orderer: &OrdererDefaults
         # - 127.0.0.1:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch.
-    BatchTimeout: 2s
+    BatchTimeout: 2s            #배치 타임아웃 설정
 
     # Batch Size: Controls the number of messages batched into a block.
     # The orderer views messages opaquely, but typically, messages may
@@ -278,7 +278,7 @@ Orderer: &OrdererDefaults
 
         # Max Message Count: The maximum number of messages to permit in a
         # batch.  No block will contain more than this number of messages.
-        MaxMessageCount: 500
+        MaxMessageCount: 500    #블럭당 최대 트랜잭션 개수
 
         # Absolute Max Bytes: The absolute maximum number of bytes allowed for
         # the serialized messages in a batch. The maximum block size is this value
@@ -300,7 +300,7 @@ Orderer: &OrdererDefaults
         # will contain only that message.  Because messages may be larger than
         # preferred max bytes (up to AbsoluteMaxBytes), some batches may exceed
         # the preferred max bytes, but will always contain exactly one transaction.
-        PreferredMaxBytes: 2 MB
+        PreferredMaxBytes: 2 MB         #블록 최대크기
 
     # Max Channels is the maximum number of channels to allow on the ordering
     # network. When set to 0, this implies no maximum number of channels.
@@ -325,8 +325,8 @@ Orderer: &OrdererDefaults
         Consenters:
             - Host: raft0.example.com
               Port: 7050
-              ClientTLSCert: path/to/ClientTLSCert0
-              ServerTLSCert: path/to/ServerTLSCert0
+              ClientTLSCert: path/to/ClientTLSCert0     #오더러의 tls 클라이언트 인증서
+              ServerTLSCert: path/to/ServerTLSCert0     #오더러의 tls 서버 인증서
             - Host: raft1.example.com
               Port: 7050
               ClientTLSCert: path/to/ClientTLSCert1
